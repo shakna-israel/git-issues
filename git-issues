@@ -57,6 +57,26 @@ if [ $? = '128' ]; then
   echo 'Did you run "git init"?' 1>&2
   exit 1
 fi
+# Note:
+# git_dir can be empty, if we're in it.
+# git_dir can be a relative path
+# git_dir can be an absolute path, so don't prepend to it!
+
+# If git_dir is empty, we're in it!
+if [ -z "$git_dir" ]; then
+  git_dir='./'
+fi
+
+# Ensure git issues exists.
+if [ ! -d "$git_dir/ISSUES" ]; then
+  mkdir "$git_dir/ISSUES"
+  if [ $? -ne 0 ]; then
+    echo 'Could not create git-issues directory.' 1>&2
+    echo '' 1>&2
+    echo 'Do you have permission?' 1>&2
+    exit 1
+  fi
+fi
 
 if [ -z "$1" ] || [ "$1" = 'help' ]; then
   help
@@ -73,13 +93,55 @@ if [ "$1" = 'add' ]; then
     cat "$git_issues_dir/docs/01_add.md" | "$git_issues_pager"
     exit 0
   fi
+
+  title="$2"
+  if [ -z "$2" ]; then
+    echo 'Please supply a title for your issue.' 1>&2
+    echo '' 1>&2
+    exit 1
+  fi
+
   user=$(git config 'user.name')
   if [ -z "$user" ]; then
     echo 'Could not find a git user name.' 1>&2
     echo '' 1>&2
     echo 'Did you set one with "git --config"?' 1>&2
     echo 'e.g. "git config --global user.name `Joe Smith`"'
+    exit 1
   fi
+  user_email=$(git config 'user.email')
+  if [ -z "$user" ]; then
+    echo 'Could not find a git user email address.' 1>&2
+    echo '' 1>&2
+    echo 'Did you set one with "git --config"?' 1>&2
+    echo 'e.g. "git config --global user.email `joe.smith@example.com`"'
+    exit 1
+  fi
+  last_issue_no=$(ls "$git_dir/ISSUES" | sort | tail -n1 | awk -F'-' '{print $1}' )
+  if [ -z "$last_issue_no" ]; then
+    last_issue_no='0'
+  fi
+  current_issue_no=$(echo "$last_issue_no + 1" | bc)
+  # Got our title and issue number, create the issue!
+  file_name=$(echo "$title" | tr " " "-" | tr '[:upper:]' '[:lower:]')
+  file_name="$git_dir/ISSUES/$current_issue_no-$file_name.issue"
+  if [ -z "$3" ]; then
+    echo "# $title" >> "$file_name"
+    echo '' >> "$file_name"
+    echo '---' >> "$file_name"
+    echo '' >> "$file_name"
+    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
+  else
+    echo "# $title" >> "$file_name"
+    echo '' >> "$file_name"
+    echo "$3" >> "$file_name"
+    echo '' >> "$file_name"
+    echo '---' >> "$file_name"
+    echo '' >> "$file_name"
+    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
+  fi
+  git add "$file_name"
+  git commit -am "ISSUE #$current_issue_no opened '$title' by $user <$user_email>."
 fi
 
 if [ "$1" = 'close' ]; then
