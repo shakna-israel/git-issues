@@ -35,6 +35,9 @@ When git-issues is in a usable state, issues will continue to be managed by th g
 - [ ] Issues Log
 - [ ] Issues Rate
 - [ ] Issues TUI
+- [ ] vim plugin
+- [ ] emacs plugin
+- [ ] Atom plugin
 - [ ] Issues Sync
 - [ ] 1.0.0
 
