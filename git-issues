@@ -93,6 +93,8 @@ if [ "$1" = 'sync' ]; then
 fi
 
 ## If we have no issues, let's be kind and remove our garbage.
-if [ ! "$(ls -A "$git_dir/ISSUES")" ]; then
-  rm -rf "$git_dir/ISSUES"
+if [ -d "$git_dir/ISSUES" ]; then
+  if [ ! "$(ls -A "$git_dir/ISSUES")" ]; then
+    rm -rf "$git_dir/ISSUES"
+  fi
 fi
