@@ -4,8 +4,45 @@ help() {
 	echo 'git-issues'
 }
 
+# macos compatibility for readlink
+# (The BSD readlink does not have the `-f` option)
+if [ "$(uname)" = "Darwin" ]; then
+  rlink='greadlink'
+else
+  rlink='readlink'
+fi
+
+# Crash if we can't use readlink...
+if "$rlink" --help | grep -q 'readlink'; then
+  :
+else
+  echo 'Could not access readlink.' 1>&2
+  echo '' 1>&2
+  echo 'Note: macOS users, you may need the GNU coreutils, try the homebrew or macports package managers.' 1>&2
+  exit $NOREADLINK
+fi
+
+# Check we have a pager...
+# If we don't try and use less, otherwise crash with a helpful message.
+if [ -z "$PAGER" ]; then
+	if [ $(whereis less | wc -c) = '6' ]; then
+		echo 'Could not find a pager.' 1>&2
+		echo '' 1>&2
+		echo 'Note: You need to install less or more, or another pager and set $PAGER to the right value.' 1>&2
+		echo 'macOS users, you can try homebrew or macports package managers.'
+	else
+		git_issues_pager='less'
+	fi
+else
+	git_issues_pager="$PAGER"
+fi
+
+# Get our own directory, so we can access our docs and things.
+git_issues_dir=$(dirname "$($rlink -f "$0")")
+
 if [ -z "$1" ] || [ "$1" = 'help' ]; then
   help
+  cat "$git_issues_dir/docs/*.md" | "$git_issues_pager"
 fi
 
 if [ "$1" = 'tui' ]; then
