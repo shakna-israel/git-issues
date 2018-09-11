@@ -178,8 +178,18 @@ if [ "$1" = 'add' ]; then
 fi
 
 if [ "$1" = 'close' ]; then
-  echo 'NOT YET IMPLEMENTED' 1>&2
+  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
+    cat "$git_issues_dir/docs/03_close.md" | "$git_issues_pager"
+    exit 0
+  fi
+
+  # Try and match any hash
+  hash_files=$(find "$git_dir/ISSUES/" -type f -name "$2*.issue")
+  echo "$hash_files"
   exit 1
+
+  # Try and match any title
+  title_files=$(find "$git_dir/ISSUES/" -type f -name "*-$2*.issue")
 fi
 
 if [ "$1" = 'comment' ]; then
