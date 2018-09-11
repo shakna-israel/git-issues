@@ -47,6 +47,16 @@ if [ "$1" = 'close' ]; then
   . "$git_issues_dir/src/git-issues-close"
 fi
 
+if [ "$1" = 'reopen' ]; then
+  . "$git_issues_dir/src/git-issues-reopen"
+fi
+
+if [ "$1" = 'tag' ]; then
+  echo 'NOT YET IMPLEMENTED' 1>&2
+  exit 1
+fi
+
+
 if [ "$1" = 'comment' ]; then
   echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1

@@ -1,5 +1,5 @@
-  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
-    cat "$git_issues_dir/docs/03_close.md" | "$git_issues_pager"
+if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
+    cat "$git_issues_dir/docs/04_reopen.md" | "$git_issues_pager"
     exit 0
   fi
 
@@ -20,47 +20,50 @@
     exit 1
   fi
 
-  # Try and match any hash
-  hash_files=$(find "$git_dir/ISSUES/" -type f -name "$2-*.issue")
+# Try and match any hash
+  hash_files=$(find "$git_dir/ISSUES/" -type f -name "$2-*.issue.closed")
   file_list="$hash_files"
   # Hash didn't match, try titles:
   if [ -z "$hash_files" ]; then
     # Try and match any title
     title=$(echo "$2" | tr " " "-" | tr '[:upper:]' '[:lower:]')
-    title_files=$(find "$git_dir/ISSUES/" -type f -name "*-$title*.issue")
+    title_files=$(find "$git_dir/ISSUES/" -type f -name "*-$title*.issue.closed")
     file_list="$title_files"
   fi
   # Remove empty lines
   file_list=$(echo "$file_list" | sed '/^$/d')
 
-  # If we've only got one result, we can close it.
+  # If we've only got one result, we can reopen it!
   if [ $(echo "$file_list" | wc -l) -eq 1 ] && [ -n "$file_list" ]; then
-    echo '' >> "$file_list"
-    # Add the closed message to the file.
+    len=$(echo "$file_list" | wc -c)
+    max=$(echo "$len - 8" | bc)
+    # Remove the .closed extension
+    new_name=$(echo "$file_list" | cut -c 1-"$max")
+    # Rename the file
+    mv "$file_list" "$new_name"
+    # Add the reopen signature
     if [ -z "$3" ]; then
-      echo 'CLOSED ISSUE.' >> "$file_list"
+      echo 'REOPENED ISSUE.' >> "$new_name"
     else
-      echo 'CLOSED ISSUE.' >> "$file_list"
-      echo '' >> "$file_list"
-      echo "$3" >> "$file_list"
+      echo 'REOPENED ISSUE.' >> "$new_name"
+      echo '' >> "$new_name"
+      echo "$3" >> "$new_name"
     fi
     # Sign the file as the user
-    echo '' >> "$file_list"
-    echo '---' >> "$file_list"
-    echo '' >> "$file_list"
-    echo '-- Signed: ' "$user <$user_email>" >> "$file_list"
-    # Add the .closed extension, and make sure git knows it exists
-    mv "$file_list" "$file_list".closed
-    git add "$file_list".closed
-    # Extract our hash from the file name
-    hash=$(basename $(echo "$file_list" | awk -F'-' '{print $1}'))
+    echo '' >> "$new_name"
+    echo '---' >> "$new_name"
+    echo '' >> "$new_name"
+    echo '-- Signed: ' "$user <$user_email>" >> "$new_name"
+    # Extract our hash form the file name
+    hash=$(basename $(echo "$new_name" | awk -F'-' '{print $1}'))
     # Extract our title from the file name
-    title=$(basename $(echo "$file_list" | awk -F'-' '{print $2}'))
+    title=$(basename $(echo "$new_name" | awk -F'-' '{print $2}'))
     # Ensure git has our file
-    git add "$file_list"
+    git add "$new_name"
     # Commit.
-    git commit -am "[ISSUE: CLOSED] #$hash ($title) by $user <$user_email>."
+    git commit -am "[ISSUE: REOPENED] #$hash ($title) by $user <$user_email>."
   else
+    # Couldn't find anything.
     if [ -z "$file_list" ]; then
       # We got no results.
       echo 'Search found no open issues matching that description.' 1>&2
@@ -72,7 +75,7 @@
       echo 'Search matched multiple issues:' 1>&2
       echo "$file_list" 1>&2
       echo '' 1>&2
-      echo 'git-issues cannot close it.' 1>&2
+      echo 'git-issues cannot reopen it.' 1>&2
       echo 'Try searching by hash, or in the rare event of a hash clash, try renaming one of the files in question.' 1>&2
       exit 1
     fi

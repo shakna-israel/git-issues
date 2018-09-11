@@ -52,6 +52,12 @@ Usage:
 * ```git issues close [issue hash] [message]```
 * ```git issues close [issue title] [message]```
 
+## git issues reopen
+
+Usage:
+
+* ```git issues reopen [issue hash]```
+
 ## git issues tag
 
 Usage:
