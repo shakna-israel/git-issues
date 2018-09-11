@@ -46,12 +46,20 @@ These tools need to be installed and in your PATH:
 
 * git
 * make
-* sha512sum (usually pre-installed)
-* cut (usually pre-installed)
-* tr (usually pre-installed)
-* readlink (usually pre-installed)
-* less (usually pre-installed) or $PAGER set to some other pager utility.
-* (optional) dialog or whiptail
+* sha512sum
+    * usually pre-installed
+* cut
+    * usually pre-installed
+* tr
+    * usually pre-installed
+* readlink
+    * usually pre-installed
+    * macOS users may need to install GNU Readlink.
+* less
+    * usually pre-installed
+    * Or set $PAGER to some other pager utility.
+* dialog or whiptail
+    * optional, used for tui
 
 Note: If any tool is not found, then git-issues will complain in a helpful manner.
 
@@ -65,15 +73,15 @@ make install
 
 Note: May need to run as root. (e.g. sudo make install).
 
-You can also specify PREFIX to change the default install location.
+You can also specify PREFIX to change the default install location. (This destination will also be remembered by the uninstall script.)
 
 ## Uninstall
 
 ```
-git-issues uninstall
+git issues uninstall
 ```
 
-Note: May need to run as root. (e.g. sudo git-issues uninstall).
+Note: May need to run as root, depending on where you installed it. (e.g. sudo git-issues uninstall).
 
 ---
 

@@ -36,16 +36,7 @@ git_issues_dir=$(dirname "$($rlink -f "$0")")
 
 # Uninstall runs from a provided makefile!
 if [ "$1" = 'uninstall' ]; then
-
-  if [ $(whereis make | wc -c) = '6' ]; then
-    echo 'Could not find make.' 1>&2
-    echo '' 1>&2
-    echo 'Is it installed?' 1>&2
-    exit 1
-  fi
-
-  cd "$git_issues_dir"
-  make uninstall
+  . "$git_issues_dir/src/git-issues-uninstall"
 fi
 
 if [ "$1" = 'tui' ]; then

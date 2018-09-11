@@ -1,0 +1,14 @@
+if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
+    cat "$git_issues_dir/docs/05_uninstall.md" | "$git_issues_pager"
+    exit 0
+  fi
+  if [ $(whereis make | wc -c) = '6' ]; then
+    echo 'Could not find make.' 1>&2
+    echo '' 1>&2
+    echo 'Is it installed?' 1>&2
+    exit 1
+  fi
+
+  cd "$git_issues_dir"
+  make uninstall
+  exit 0
