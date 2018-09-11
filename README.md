@@ -58,6 +58,9 @@ These tools need to be installed and in your PATH:
 
 * git
 * make
+* sha512sum (usually pre-installed)
+* cut (usually pre-installed)
+* tr (usually pre-installed)
 * readlink (usually pre-installed)
 * less (usually pre-installed) or $PAGER set to some other pager utility.
 * (optional) dialog or whiptail
