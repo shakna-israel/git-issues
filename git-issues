@@ -1,0 +1,54 @@
+#!/bin/sh
+
+help() {
+	echo 'git-issues'
+}
+
+if [ -z "$1" ] || [ "$1" = 'help' ]; then
+  help
+fi
+
+if [ "$1" = 'tui' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'add' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'close' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'comment' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'log' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'list' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'graph' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'rate' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi
+
+if [ "$1" = 'sync' ]; then
+  echo 'NOT YET IMPLEMENTED'
+  exit 1
+fi

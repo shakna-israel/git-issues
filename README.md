@@ -36,10 +36,7 @@ It is designed to be used by the extension, but care has been taken to ensure it
 
 ---
 
-# Install
-
-
----
+# Installation
 
 ## Prequisites
 
@@ -50,6 +47,8 @@ These tools need to be installed and in your PATH:
 * dialog (optional)
 
 ---
+
+## Install
 
 ```
 make install
