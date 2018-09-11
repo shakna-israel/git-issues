@@ -44,7 +44,11 @@ These tools need to be installed and in your PATH:
 
 * git
 * make
-* dialog (optional)
+* readlink (usually pre-installed)
+* less (usually pre-installed) or $PAGER set to some other pager utility.
+* (optional) dialog or whiptail
+
+Note: If any tool is not found, then git-issues will complain in a helpful manner.
 
 ---
 

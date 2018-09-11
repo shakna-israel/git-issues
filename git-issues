@@ -1,7 +1,7 @@
 #!/bin/sh
 
 help() {
-	echo 'git-issues'
+  echo 'git-issues'
 }
 
 # macos compatibility for readlink
@@ -19,26 +19,44 @@ else
   echo 'Could not access readlink.' 1>&2
   echo '' 1>&2
   echo 'Note: macOS users, you may need the GNU coreutils, try the homebrew or macports package managers.' 1>&2
-  exit $NOREADLINK
+  exit 1
 fi
 
 # Check we have a pager...
 # If we don't try and use less, otherwise crash with a helpful message.
 if [ -z "$PAGER" ]; then
-	if [ $(whereis less | wc -c) = '6' ]; then
-		echo 'Could not find a pager.' 1>&2
-		echo '' 1>&2
-		echo 'Note: You need to install less or more, or another pager and set $PAGER to the right value.' 1>&2
-		echo 'macOS users, you can try homebrew or macports package managers.'
-	else
-		git_issues_pager='less'
-	fi
+  if [ $(whereis less | wc -c) = '6' ]; then
+    echo 'Could not find a pager.' 1>&2
+    echo '' 1>&2
+    echo 'Note: You need to install less or more, or another pager and set $PAGER to the right value.' 1>&2
+    echo 'macOS users, you can try homebrew or macports package managers.' 1>&2
+    exit 1
+  else
+    git_issues_pager='less'
+  fi
 else
-	git_issues_pager="$PAGER"
+  git_issues_pager="$PAGER"
+fi
+
+# Check if we have git...
+if [ $(whereis git | wc -c) = '5' ]; then
+  echo 'Could not find git.' 1>&2
+  echo '' 1>&2
+  echo 'Is it installed?' 1>&2
+  exit 1
 fi
 
 # Get our own directory, so we can access our docs and things.
 git_issues_dir=$(dirname "$($rlink -f "$0")")
+
+# Check we're in a git repository
+git_dir=$(git rev-parse --show-cdup)
+if [ $? = '128' ]; then
+  echo 'Not a git repository.' 1>&2
+  echo '' 1>&2
+  echo 'Did you run "git init"?' 1>&2
+  exit 1
+fi
 
 if [ -z "$1" ] || [ "$1" = 'help' ]; then
   help
@@ -51,8 +69,17 @@ if [ "$1" = 'tui' ]; then
 fi
 
 if [ "$1" = 'add' ]; then
-  echo 'NOT YET IMPLEMENTED'
-  exit 1
+  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
+    cat "$git_issues_dir/docs/01_add.md" | "$git_issues_pager"
+    exit 0
+  fi
+  user=$(git config 'user.name')
+  if [ -z "$user" ]; then
+    echo 'Could not find a git user name.' 1>&2
+    echo '' 1>&2
+    echo 'Did you set one with "git --config"?' 1>&2
+    echo 'e.g. "git config --global user.name `Joe Smith`"'
+  fi
 fi
 
 if [ "$1" = 'close' ]; then
