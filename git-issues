@@ -4,6 +4,9 @@ set -e
 
 version='0.0.0'
 
+# Readlink stuff needs to be in the main program,
+# because it's how we find everything else.
+
 # macos compatibility for readlink
 # (The BSD readlink does not have the `-f` option)
 if [ "$(uname)" = "Darwin" ]; then
@@ -25,9 +28,8 @@ fi
 # Get our own directory, so we can access our docs and things.
 git_issues_dir=$(dirname "$($rlink -f "$0")")
 
-# Load our external tools.
+# Verify sets up git_dir, pager, and other things like that.
 . "$git_issues_dir/src/git-issues-verify"
-. "$git_issues_dir/src/git-issues-help"
 
 # TODO: Autoclose issues
 # If a git commit is commented like:
@@ -36,6 +38,8 @@ git_issues_dir=$(dirname "$($rlink -f "$0")")
 # Maybe dialog/whiptail or read should be used to ask if we can autoclose it.
 
 if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; then
+  # Only load help if we need it.
+  . "$git_issues_dir/src/git-issues-help"
   help
 fi
 

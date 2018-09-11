@@ -22,7 +22,7 @@ if [ $(whereis git | wc -c) = '5' ]; then
   exit 1
 fi
 
-# Check we're in a git repository
+# Check we're in a git repository & set the git directory if we are.
 git_dir=$(git rev-parse --show-cdup)
 if [ $? = '128' ]; then
   echo 'Not a git repository.' 1>&2
@@ -41,6 +41,7 @@ if [ -z "$git_dir" ]; then
 fi
 
 # Ensure git issues exists.
+# If no issues get added, we'll clean it up later.
 if [ ! -d "$git_dir/ISSUES" ]; then
   mkdir "$git_dir/ISSUES"
   if [ $? -ne 0 ]; then

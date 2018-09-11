@@ -20,7 +20,23 @@ Documentation likely points to incorrect information, and information that is no
 
 Until git-issues is in a usable state, the version number will remain 0.0.0
 
-When git-issues is in a usable state, issues will probably be managed by itself.
+When git-issues is in a usable state, issues will continue to be managed by th git provider (i.e. GitHub), as if you're having issues with git-issues, you may not be able to use it to raise issues here.
+
+### Roadmap
+
+- [X] Installer
+- [X] Uninstaller
+- [X] Open Issues
+- [X] Close Issues
+- [ ] Comment Issues
+- [ ] Tag Issues
+- [ ] List Issues
+- [ ] Issues Graph
+- [ ] Issues Log
+- [ ] Issues Rate
+- [ ] Issues TUI
+- [ ] Issues Sync
+- [ ] 1.0.0
 
 ---
 
@@ -40,12 +56,25 @@ git issues help
 
 # Installation
 
+## Platform Support
+
+* Linux
+    * Fully supported
+* BSD
+    * May work. Please raise issues if you have them.
+* macOS
+    * May work. Please raise issues if you have them.
+* Cygwin
+    * May work. Sorry, I can't help if you encounter problems.
+
 ## Prequisites
 
 These tools need to be installed and in your PATH:
 
 * git
 * make
+* grep
+    * usually pre-installed
 * sha512sum
     * usually pre-installed
 * cut
