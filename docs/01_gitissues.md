@@ -49,6 +49,8 @@ Usage:
 
 * ```git issues close [issue hash]```
 * ```git issues close [issue title]```
+* ```git issues close [issue hash] [message]```
+* ```git issues close [issue title] [message]```
 
 ## git issues tag
 
