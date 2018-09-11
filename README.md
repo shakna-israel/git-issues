@@ -10,6 +10,20 @@ It is designed to be used by the extension, but care has been taken to ensure it
 
 ---
 
+## Stability
+
+git-issues is still under active development, and is not yet in a working state.
+
+Using it will probably screw up your git tree.
+
+Documentation likely points to incorrect information, and information that is not yet correct (i.e. Talks about unimplemented features).
+
+Until git-issues is in a usable state, the version number will remain 0.0.0
+
+When git-issues is in a usable state, issues will probably be managed by itself.
+
+---
+
 # Usage
 
 ## git issues help
