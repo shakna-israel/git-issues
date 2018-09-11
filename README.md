@@ -26,27 +26,15 @@ When git-issues is in a usable state, issues will probably be managed by itself.
 
 # Usage
 
-## git issues help
+See [git-issues help](docs/01_gitissues.md)
 
-## man git-issues
+or
 
-## git issues tui
+run:
 
-## git issues add
-
-## git issues close
-
-## git issues comment
-
-## git issues log
-
-## git issues list
-
-## git issues graph
-
-## git issues rate
-
-## git issues sync
+```
+git issues help
+```
 
 ---
 

@@ -88,6 +88,11 @@ if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; t
   help
 fi
 
+# TODO: Autoclose issues
+# If a git commit is commented like:
+# FIX: ISSUEHASH Comment
+# Then autoclose it, and notify the user in a PAGER screen, so they see it.
+
 if [ "$1" = 'tui' ]; then
   echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
@@ -205,4 +210,9 @@ fi
 if [ "$1" = 'sync' ]; then
   echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
+fi
+
+## If we have no issues, let's be kind and remove our garbage.
+if [ ! "$(ls -A "$git_dir/ISSUES")" ]; then
+  rm -rf "$git_dir/ISSUES"
 fi
