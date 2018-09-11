@@ -34,7 +34,7 @@ Usage:
 
 * ```git issues tui```
 
-## git issues add
+## [git issues add](./02_add.md)
 
 Create a new issue to be recorded.
 
@@ -43,7 +43,7 @@ Usage:
 * ```git issues add [title]```
 * ```git issues add [title] [comment]```
 
-## git issues close
+## [git issues close](./03_close.md)
 
 Usage:
 
@@ -52,7 +52,7 @@ Usage:
 * ```git issues close [issue hash] [message]```
 * ```git issues close [issue title] [message]```
 
-## git issues reopen
+## [git issues reopen](./04_reopen.md)_
 
 Usage:
 
