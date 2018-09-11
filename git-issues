@@ -22,71 +22,12 @@ else
   exit 1
 fi
 
-# Check we have a pager...
-# If we don't try and use less, otherwise crash with a helpful message.
-if [ -z "$PAGER" ]; then
-  if [ $(whereis less | wc -c) = '6' ]; then
-    echo 'Could not find a pager.' 1>&2
-    echo '' 1>&2
-    echo 'Note: You need to install less or more, or another pager and set $PAGER to the right value.' 1>&2
-    echo 'macOS users, you can try homebrew or macports package managers.' 1>&2
-    exit 1
-  else
-    git_issues_pager='less'
-  fi
-else
-  git_issues_pager="$PAGER"
-fi
-
-# Check if we have git...
-if [ $(whereis git | wc -c) = '5' ]; then
-  echo 'Could not find git.' 1>&2
-  echo '' 1>&2
-  echo 'Is it installed?' 1>&2
-  exit 1
-fi
-
 # Get our own directory, so we can access our docs and things.
 git_issues_dir=$(dirname "$($rlink -f "$0")")
 
-# Check we're in a git repository
-git_dir=$(git rev-parse --show-cdup)
-if [ $? = '128' ]; then
-  echo 'Not a git repository.' 1>&2
-  echo '' 1>&2
-  echo 'Did you run "git init"?' 1>&2
-  exit 1
-fi
-# Note:
-# git_dir can be empty, if we're in it.
-# git_dir can be a relative path
-# git_dir can be an absolute path, so don't prepend to it!
-
-# If git_dir is empty, we're in it!
-if [ -z "$git_dir" ]; then
-  git_dir='./'
-fi
-
-# Ensure git issues exists.
-if [ ! -d "$git_dir/ISSUES" ]; then
-  mkdir "$git_dir/ISSUES"
-  if [ $? -ne 0 ]; then
-    echo 'Could not create git-issues directory.' 1>&2
-    echo '' 1>&2
-    echo 'Do you have permission?' 1>&2
-    exit 1
-  fi
-fi
-
-help() {
-  #docs=$(cat "$git_issues_dir/docs/*.md")
-  docs=$(cat $(find "$git_issues_dir/docs" -type f | sort))
-  printf "git-issues\nVersion $version\n\n$docs" | "$git_issues_pager"
-}
-
-if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; then
-  help
-fi
+# Load our external tools.
+. "$git_issues_dir/src/git-issues-verify"
+. "$git_issues_dir/src/git-issues-help"
 
 # TODO: Autoclose issues
 # If a git commit is commented like:
@@ -99,153 +40,11 @@ if [ "$1" = 'tui' ]; then
 fi
 
 if [ "$1" = 'add' ]; then
-  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
-    cat "$git_issues_dir/docs/02_add.md" | "$git_issues_pager"
-    exit 0
-  fi
-
-  if [ $(whereis cut | wc -c) = '5' ]; then
-    echo 'Could not find cut.' 1>&2
-    echo '' 1>&2
-    echo 'Is it installed?' 1>&2
-    exit 1
-  fi
-
-  if [ $(whereis tr | wc -c) = '4' ]; then
-    echo 'Could not find tr.' 1>&2
-    echo '' 1>&2
-    echo 'Is it installed?' 1>&2
-    exit 1
-  fi
-
-  if [ $(whereis sha512sum | wc -c) = '11' ]; then
-    echo 'Could not find sha512sum.' 1>&2
-    echo '' 1>&2
-    echo 'Is it installed?' 1>&2
-    exit 1
-  fi
-
-  title="$2"
-  if [ -z "$2" ]; then
-    echo 'Please supply a title for your issue.' 1>&2
-    echo '' 1>&2
-    exit 1
-  fi
-
-  user=$(git config 'user.name')
-  if [ -z "$user" ]; then
-    echo 'Could not find a git user name.' 1>&2
-    echo '' 1>&2
-    echo 'Did you set one with "git --config"?' 1>&2
-    echo 'e.g. "git config --global user.name `Joe Smith`"'
-    exit 1
-  fi
-  user_email=$(git config 'user.email')
-  if [ -z "$user" ]; then
-    echo 'Could not find a git user email address.' 1>&2
-    echo '' 1>&2
-    echo 'Did you set one with "git --config"?' 1>&2
-    echo 'e.g. "git config --global user.email `joe.smith@example.com`"'
-    exit 1
-  fi
-  # Can't use sequential issue numbers, because conflicts.
-  # So... Hash username+useremail+epochtime should be unique most of the time!
-  now=$(date +%s)
-  # We do cut the hash size, which reduces entropy considerably, but it's to be
-  # reasonable about commit message sizes.
-  hash=$(echo "$user <user_email> #$now" | sha512sum | cut -c -20)
-
-  # Got our title and issue number, create the issue!
-  # If you change this, be sure to change the title matcher in git-issues close as well.
-  file_name=$(echo "$title" | tr " " "-" | tr '[:upper:]' '[:lower:]')
-  file_name="$git_dir/ISSUES/$hash-$file_name.issue"
-  if [ -z "$3" ]; then
-    echo "# $title" >> "$file_name"
-    echo '' >> "$file_name"
-    echo '---' >> "$file_name"
-    echo '' >> "$file_name"
-    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
-  else
-    echo "# $title" >> "$file_name"
-    echo '' >> "$file_name"
-    echo "$3" >> "$file_name"
-    echo '' >> "$file_name"
-    echo '---' >> "$file_name"
-    echo '' >> "$file_name"
-    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
-  fi
-  git add "$file_name"
-  git commit -am "[ISSUE] #$hash ($title) by $user <$user_email>."
+  . "$git_issues_dir/src/git-issues-add"
 fi
 
 if [ "$1" = 'close' ]; then
-  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
-    cat "$git_issues_dir/docs/03_close.md" | "$git_issues_pager"
-    exit 0
-  fi
-
-  user=$(git config 'user.name')
-  if [ -z "$user" ]; then
-    echo 'Could not find a git user name.' 1>&2
-    echo '' 1>&2
-    echo 'Did you set one with "git --config"?' 1>&2
-    echo 'e.g. "git config --global user.name `Joe Smith`"'
-    exit 1
-  fi
-  user_email=$(git config 'user.email')
-  if [ -z "$user" ]; then
-    echo 'Could not find a git user email address.' 1>&2
-    echo '' 1>&2
-    echo 'Did you set one with "git --config"?' 1>&2
-    echo 'e.g. "git config --global user.email `joe.smith@example.com`"'
-    exit 1
-  fi
-
-  # Try and match any hash
-  hash_files=$(find "$git_dir/ISSUES/" -type f -name "$2-*.issue")
-  file_list="$hash_files"
-  # Hash didn't match, try titles:
-  if [ -z "$hash_files" ]; then
-    # Try and match any title
-    title=$(echo "$2" | tr " " "-" | tr '[:upper:]' '[:lower:]')
-    title_files=$(find "$git_dir/ISSUES/" -type f -name "*-$title*.issue")
-    file_list="$title_files"
-  fi
-  # Remove empty lines
-  file_list=$(echo "$file_list" | sed '/^$/d')
-
-  # If we've only got one result, we can close it.
-  if [ $(echo "$file_list" | wc -l) -eq 1 ] && [ -n "$file_list" ]; then
-    echo '' >> "$file_list"
-    if [ -z "$3" ]; then
-      echo 'CLOSED ISSUE.' >> "$file_list"
-    else
-      echo 'CLOSED ISSUE.' >> "$file_list"
-      echo '' >> "$file_list"
-      echo "$3" >> "$file_list"
-    fi
-    echo '' >> "$file_list"
-    echo '---' >> "$file_list"
-    echo '' >> "$file_list"
-    echo '-- Signed: ' "$user <$user_email>" >> "$file_list"
-    mv "$file_list" "$file_list".closed
-  else
-    if [ -z "$file_list" ]; then
-      # We got no results.
-      echo 'Search found no open issues matching that description.' 1>&2
-      echo '' 1>&2
-      echo 'Are you sure it exists?' 1>&2
-    else
-      # We got ambiguous results. Let the user deal with it.
-      echo 'Search matched multiple issues:' 1>&2
-      echo "$file_list" 1>&2
-      echo '' 1>&2
-      echo 'git-issues cannot close it.' 1>&2
-      echo 'Try searching by hash, or in the rare event of a hash clash, try renaming one of the files in question.' 1>&2
-    fi
-  fi
-
-  exit 1
+  . "$git_issues_dir/src/git-issues-close"
 fi
 
 if [ "$1" = 'comment' ]; then

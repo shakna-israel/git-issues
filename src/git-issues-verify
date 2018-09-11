@@ -1,0 +1,52 @@
+# Check we have a pager...
+# If we don't try and use less, otherwise crash with a helpful message.
+if [ -z "$PAGER" ]; then
+  if [ $(whereis less | wc -c) = '6' ]; then
+    echo 'Could not find a pager.' 1>&2
+    echo '' 1>&2
+    echo 'Note: You need to install less or more, or another pager and set $PAGER to the right value.' 1>&2
+    echo 'macOS users, you can try homebrew or macports package managers.' 1>&2
+    exit 1
+  else
+    git_issues_pager='less'
+  fi
+else
+  git_issues_pager="$PAGER"
+fi
+
+# Check if we have git...
+if [ $(whereis git | wc -c) = '5' ]; then
+  echo 'Could not find git.' 1>&2
+  echo '' 1>&2
+  echo 'Is it installed?' 1>&2
+  exit 1
+fi
+
+# Check we're in a git repository
+git_dir=$(git rev-parse --show-cdup)
+if [ $? = '128' ]; then
+  echo 'Not a git repository.' 1>&2
+  echo '' 1>&2
+  echo 'Did you run "git init"?' 1>&2
+  exit 1
+fi
+# Note:
+# git_dir can be empty, if we're in it.
+# git_dir can be a relative path
+# git_dir can be an absolute path, so don't prepend to it!
+
+# If git_dir is empty, we're in it!
+if [ -z "$git_dir" ]; then
+  git_dir='./'
+fi
+
+# Ensure git issues exists.
+if [ ! -d "$git_dir/ISSUES" ]; then
+  mkdir "$git_dir/ISSUES"
+  if [ $? -ne 0 ]; then
+    echo 'Could not create git-issues directory.' 1>&2
+    echo '' 1>&2
+    echo 'Do you have permission?' 1>&2
+    exit 1
+  fi
+fi
