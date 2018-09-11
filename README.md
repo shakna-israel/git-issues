@@ -1,10 +1,10 @@
-# gitissues
+# git-issues
 
 A git extension for issue management
 
 ---
 
-gitissues is an extension for git that adds issue management to the repository.
+git-issues is an extension for git that adds issue management to the repository.
 
 It is designed to be used by the extension, but care has been taken to ensure it can also be used by those who wish to use other tools to manage the issues.
 
