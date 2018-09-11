@@ -33,6 +33,11 @@ git_issues_dir=$(dirname "$($rlink -f "$0")")
 # If a git commit is commented like:
 # FIX: ISSUEHASH Comment
 # Then autoclose it, and notify the user in a PAGER screen, so they see it.
+# Maybe dialog/whiptail or read should be used to ask if we can autoclose it.
+
+if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; then
+  help
+fi
 
 # Uninstall runs from a provided makefile!
 if [ "$1" = 'uninstall' ]; then
