@@ -28,6 +28,8 @@ It is designed to be used by the extension, but care has been taken to ensure it
 
 ## git issues list
 
+## git issues graph
+
 ## git issues rate
 
 ## git issues sync
