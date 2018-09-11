@@ -1,8 +1,8 @@
 #!/bin/sh
 
-help() {
-  echo 'git-issues'
-}
+set -e
+
+version='0.0.0'
 
 # macos compatibility for readlink
 # (The BSD readlink does not have the `-f` option)
@@ -78,19 +78,24 @@ if [ ! -d "$git_dir/ISSUES" ]; then
   fi
 fi
 
-if [ -z "$1" ] || [ "$1" = 'help' ]; then
+help() {
+  #docs=$(cat "$git_issues_dir/docs/*.md")
+  docs=$(cat $(find "$git_issues_dir/docs" -type f | sort))
+  printf "git-issues\nVersion $version\n\n$docs" | "$git_issues_pager"
+}
+
+if [ -z "$1" ] || [ "$1" = 'help' ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; then
   help
-  cat "$git_issues_dir/docs/*.md" | "$git_issues_pager"
 fi
 
 if [ "$1" = 'tui' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'add' ]; then
   if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
-    cat "$git_issues_dir/docs/01_add.md" | "$git_issues_pager"
+    cat "$git_issues_dir/docs/02_add.md" | "$git_issues_pager"
     exit 0
   fi
 
@@ -141,40 +146,40 @@ if [ "$1" = 'add' ]; then
     echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
   fi
   git add "$file_name"
-  git commit -am "ISSUE #$current_issue_no opened '$title' by $user <$user_email>."
+  git commit -am "[ISSUE] #$current_issue_no opened ($title) by $user <$user_email>."
 fi
 
 if [ "$1" = 'close' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'comment' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'log' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'list' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'graph' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'rate' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
 
 if [ "$1" = 'sync' ]; then
-  echo 'NOT YET IMPLEMENTED'
+  echo 'NOT YET IMPLEMENTED' 1>&2
   exit 1
 fi
