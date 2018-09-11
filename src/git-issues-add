@@ -1,0 +1,77 @@
+  if [ "$2" = '--help' ] || [ "$2" = '-h' ]; then
+    cat "$git_issues_dir/docs/02_add.md" | "$git_issues_pager"
+    exit 0
+  fi
+
+  if [ $(whereis cut | wc -c) = '5' ]; then
+    echo 'Could not find cut.' 1>&2
+    echo '' 1>&2
+    echo 'Is it installed?' 1>&2
+    exit 1
+  fi
+
+  if [ $(whereis tr | wc -c) = '4' ]; then
+    echo 'Could not find tr.' 1>&2
+    echo '' 1>&2
+    echo 'Is it installed?' 1>&2
+    exit 1
+  fi
+
+  if [ $(whereis sha512sum | wc -c) = '11' ]; then
+    echo 'Could not find sha512sum.' 1>&2
+    echo '' 1>&2
+    echo 'Is it installed?' 1>&2
+    exit 1
+  fi
+
+  title="$2"
+  if [ -z "$2" ]; then
+    echo 'Please supply a title for your issue.' 1>&2
+    echo '' 1>&2
+    exit 1
+  fi
+
+  user=$(git config 'user.name')
+  if [ -z "$user" ]; then
+    echo 'Could not find a git user name.' 1>&2
+    echo '' 1>&2
+    echo 'Did you set one with "git --config"?' 1>&2
+    echo 'e.g. "git config --global user.name `Joe Smith`"'
+    exit 1
+  fi
+  user_email=$(git config 'user.email')
+  if [ -z "$user" ]; then
+    echo 'Could not find a git user email address.' 1>&2
+    echo '' 1>&2
+    echo 'Did you set one with "git --config"?' 1>&2
+    echo 'e.g. "git config --global user.email `joe.smith@example.com`"'
+    exit 1
+  fi
+  # Can't use sequential issue numbers, because conflicts.
+  # So... Hash username+useremail+epochtime should be unique most of the time!
+  now=$(date +%s)
+  # We do cut the hash size, which reduces entropy considerably, but it's to be
+  # reasonable about commit message sizes.
+  hash=$(echo "$user <user_email> #$now" | sha512sum | cut -c -20)
+
+  # Got our title and issue number, create the issue!
+  # If you change this, be sure to change the title matcher in git-issues close as well.
+  file_name=$(echo "$title" | tr " " "-" | tr '[:upper:]' '[:lower:]')
+  file_name="$git_dir/ISSUES/$hash-$file_name.issue"
+  if [ -z "$3" ]; then
+    echo "# $title" >> "$file_name"
+    echo '' >> "$file_name"
+    echo '---' >> "$file_name"
+    echo '' >> "$file_name"
+    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
+  else
+    echo "# $title" >> "$file_name"
+    echo '' >> "$file_name"
+    echo "$3" >> "$file_name"
+    echo '' >> "$file_name"
+    echo '---' >> "$file_name"
+    echo '' >> "$file_name"
+    echo '-- Signed: ' "$user <$user_email>" >> "$file_name"
+  fi
+  git add "$file_name"
+  git commit -am "[ISSUE] #$hash ($title) by $user <$user_email>."
